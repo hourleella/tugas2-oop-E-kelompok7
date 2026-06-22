@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="template_server_tugas2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/template_server_tugas2.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
