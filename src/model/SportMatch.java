@@ -2,8 +2,8 @@ package model;
 
 public class SportMatch extends Event {
 
-    public SportMatch() {
-        super();
+    public SportMatch(String id, String name, String venueId, String organizerId, String date, double basePrice) {
+        super(id, "sport_match", name, venueId, organizerId, date, basePrice);
     }
 
     @Override
