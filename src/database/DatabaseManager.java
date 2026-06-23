@@ -13,16 +13,17 @@ import java.sql.Statement;
  * 
  * Contoh penggunaan di Repository:
  * 
- *   try (Connection conn = DatabaseManager.getConnection()) {
- *       PreparedStatement ps = conn.prepareStatement("SELECT * FROM events WHERE id = ?");
- *       ps.setString(1, eventId);
- *       ResultSet rs = ps.executeQuery();
- *       while (rs.next()) {
- *           String nama = rs.getString("nama");
- *           double harga = rs.getDouble("harga_dasar");
- *           // ...
- *       }
- *   }
+ * try (Connection conn = DatabaseManager.getConnection()) {
+ * PreparedStatement ps = conn.prepareStatement("SELECT * FROM events WHERE id =
+ * ?");
+ * ps.setString(1, eventId);
+ * ResultSet rs = ps.executeQuery();
+ * while (rs.next()) {
+ * String nama = rs.getString("nama");
+ * double harga = rs.getDouble("harga_dasar");
+ * // ...
+ * }
+ * }
  */
 public class DatabaseManager {
 
@@ -33,9 +34,9 @@ public class DatabaseManager {
      * 
      * PENTING: Selalu gunakan try-with-resources agar koneksi otomatis ditutup!
      * 
-     *   try (Connection conn = DatabaseManager.getConnection()) {
-     *       // gunakan conn disini ...
-     *   } // conn otomatis ditutup disini
+     * try (Connection conn = DatabaseManager.getConnection()) {
+     * // gunakan conn disini ...
+     * } // conn otomatis ditutup disini
      */
     public static Connection getConnection() throws SQLException {
         Connection conn = DriverManager.getConnection(DB_URL);
@@ -54,7 +55,7 @@ public class DatabaseManager {
      */
     public static void initialize() {
         try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement()) {
+                Statement stmt = conn.createStatement()) {
 
             // =============================================
             // BUAT TABEL-TABEL KALIAN DISINI
@@ -62,61 +63,56 @@ public class DatabaseManager {
             // =============================================
 
             stmt.execute(
-                "CREATE TABLE IF NOT EXISTS users ("
-                + "id TEXT PRIMARY KEY,"
-                + "name TEXT NOT NULL,"
-                + "email TEXT NOT NULL UNIQUE,"
-                + "phone TEXT,"
-                + "role TEXT DEFAULT 'buyer'," 
-                + "created_at TEXT DEFAULT (datetime('now'))"
-            );
+                    "CREATE TABLE IF NOT EXISTS users ("
+                            + "id TEXT PRIMARY KEY,"
+                            + "name TEXT NOT NULL,"
+                            + "email TEXT NOT NULL UNIQUE,"
+                            + "phone TEXT,"
+                            + "role TEXT DEFAULT 'buyer',"
+                            + "created_at TEXT DEFAULT (datetime('now'))");
             stmt.execute(
-                "CREATE TABLE IF NOT EXISTS venues ("
-                + "id TEXT PRIMARY KEY,"
-                + "name TEXT NOT NULL,"
-                + "address TEXT NOT NULL,"
-                + "max_capacity INTEGER NOT NULL,"
-                + "created_at TEXT DEFAULT (datetime('now'))"
-            );
+                    "CREATE TABLE IF NOT EXISTS venues ("
+                            + "id TEXT PRIMARY KEY,"
+                            + "name TEXT NOT NULL,"
+                            + "address TEXT NOT NULL,"
+                            + "max_capacity INTEGER NOT NULL,"
+                            + "created_at TEXT DEFAULT (datetime('now'))");
             stmt.execute(
-                "CREATE TABLE IF NOT EXISTS events ("
-                + "id TEXT PRIMARY KEY,"
-                + "type EXT NOT NULL," 
-                + "name TEXT NOT NULL,"
-                + "venue_id TEXT NOT NULL,"
-                + "organizer_id TEXT NOT NULL,"
-                + "date TEXT NOT NULL,"
-                + "base_price REAL NOT NULL,"
-                + "created_at TEXT DEFAULT (datetime('now')),"
-                + "FOREIGN KEY (venue_id) REFERENCES venues(id),"
-                + "FOREIGN KEY (organizer_id) REFERENCES users(id))"
-            );
+                    "CREATE TABLE IF NOT EXISTS events ("
+                            + "id TEXT PRIMARY KEY,"
+                            + "type TEXT NOT NULL,"
+                            + "name TEXT NOT NULL,"
+                            + "venue_id TEXT NOT NULL,"
+                            + "organizer_id TEXT NOT NULL,"
+                            + "date TEXT NOT NULL,"
+                            + "base_price REAL NOT NULL,"
+                            + "created_at TEXT DEFAULT (datetime('now')),"
+                            + "FOREIGN KEY (venue_id) REFERENCES venues(id),"
+                            + "FOREIGN KEY (organizer_id) REFERENCES users(id))");
             stmt.execute(
-                "CREATE TABLE IF NOT EXISTS capacities ("
-                + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "event_id TEXT NOT NULL,"
-                + "category TEXT NOT NULL," 
-                + "total INTEGER NOT NULL,"
-                + "filled INTEGER DEFAULT 0,"
-                + "FOREIGN KEY (event_id) REFERENCES events(id))"
-            );
+                    "CREATE TABLE IF NOT EXISTS capacities ("
+                            + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                            + "event_id TEXT NOT NULL,"
+                            + "category TEXT NOT NULL,"
+                            + "total INTEGER NOT NULL,"
+                            + "filled INTEGER DEFAULT 0,"
+                            + "FOREIGN KEY (event_id) REFERENCES events(id))");
 
             stmt.execute(
-                "CREATE TABLE IF NOT EXISTS tickets ("
-                + "id TEXT PRIMARY KEY,"
-                + "event_id TEXT NOT NULL,"
-                + "user_id TEXT NOT NULL,"
-                + "category TEXT NOT NULL,"
-                + "quantity INTEGER NOT NULL,"
-                + "unit_price REAL NOT NULL,"
-                + "total_price REAL NOT NULL,"
-                + "purchase_date TEXT DEFAULT (date('now'))," 
-                + "status TEXT DEFAULT 'active',"
-                + "refund_amount   REAL DEFAULT 0,"
-                + "FOREIGN KEY (event_id) REFERENCES events(id),"
-                + "FOREIGN KEY (user_id) REFERENCES users(id))"
-            );
-            
+                    "CREATE TABLE IF NOT EXISTS tickets ("
+                            + "id TEXT PRIMARY KEY,"
+                            + "event_id TEXT NOT NULL,"
+                            + "user_id TEXT NOT NULL,"
+                            + "category TEXT NOT NULL,"
+                            + "quantity INTEGER NOT NULL,"
+                            + "unit_price REAL NOT NULL,"
+                            + "total_price REAL NOT NULL,"
+                            + "purchase_date TEXT DEFAULT (date('now')),"
+                            + "status TEXT DEFAULT 'active',"
+                            + "refund_amount   REAL DEFAULT 0,"
+                            + "FOREIGN KEY (event_id) REFERENCES events(id),"
+                            + "FOREIGN KEY (user_id) REFERENCES users(id))");
+
             System.out.println("Database berhasil diinisialisasi.");
 
         } catch (SQLException e) {
