@@ -9,6 +9,9 @@ public abstract class Event {
     private String date;
     private double basePrice;
 
+    public Event() {
+    }
+
     public Event(String id, String type, String name, String venueId, String organizerId, String date,
             double basePrice) {
         this.id = id;
