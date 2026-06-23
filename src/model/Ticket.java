@@ -16,7 +16,7 @@ public class Ticket {
     }
 
     public Ticket(String id, String eventId, String userId, String category, int quantity, 
-                  double unitPrice, double totalPrice, String purchaseDate, String status, double refundAmount) {
+                  double unitPrice, double totalPrice, String status, double refundAmount) {
         this.id = id;
         this.eventId = eventId;
         this.userId = userId;
@@ -24,7 +24,6 @@ public class Ticket {
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.totalPrice = totalPrice;
-        this.purchaseDate = purchaseDate;
         this.status = status;
         this.refundAmount = refundAmount;
     }
