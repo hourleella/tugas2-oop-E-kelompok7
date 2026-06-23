@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Map;
+
 public abstract class Event {
     private String id;
     private String type;
@@ -8,12 +10,13 @@ public abstract class Event {
     private String organizerId;
     private String date;
     private double basePrice;
+    private Map<String, Integer> capacities;
 
     public Event() {
     }
 
     public Event(String id, String type, String name, String venueId, String organizerId, String date,
-            double basePrice) {
+            double basePrice, Map<String, Integer> capacities) {
         this.id = id;
         this.type = type;
         this.name = name;
@@ -21,6 +24,7 @@ public abstract class Event {
         this.organizerId = organizerId;
         this.date = date;
         this.basePrice = basePrice;
+        this.capacities = capacities;
     }
 
     public abstract double calculateTicketPrice(String category);
@@ -79,5 +83,13 @@ public abstract class Event {
 
     public void setBasePrice(double basePrice) {
         this.basePrice = basePrice;
+    }
+
+    public Map<String, Integer> getCapacities() {
+        return capacities;
+    }
+
+    public void setCapacities(Map<String, Integer> capacities) {
+        this.capacities = capacities;
     }
 }

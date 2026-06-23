@@ -1,8 +1,11 @@
 package model;
 
+import java.util.Map;
+
 public class Seminar extends Event implements Refundable {
-    public Seminar(String id, String name, String venueId, String organizerId, String date, double basePrice) {
-        super(id, "seminar", name, venueId, organizerId, date, basePrice);
+    public Seminar(String id, String name, String venueId, String organizerId, String date, double basePrice,
+            Map<String, Integer> capacities) {
+        super(id, "seminar", name, venueId, organizerId, date, basePrice, capacities);
     }
 
     @Override

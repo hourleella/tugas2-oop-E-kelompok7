@@ -1,15 +1,18 @@
 package model;
 
+import java.util.Map;
+
 public class SportMatch extends Event {
 
-    public SportMatch(String id, String name, String venueId, String organizerId, String date, double basePrice) {
-        super(id, "sport_match", name, venueId, organizerId, date, basePrice);
+    public SportMatch(String id, String name, String venueId, String organizerId, String date, double basePrice,
+            Map<String, Integer> capacities) {
+        super(id, "sport_match", name, venueId, organizerId, date, basePrice, capacities);
     }
 
     @Override
     public double calculateTicketPrice(String category) {
 
-        double base = super.getBasePrice(); 
+        double base = super.getBasePrice();
 
         if (category == null) {
             return base;
