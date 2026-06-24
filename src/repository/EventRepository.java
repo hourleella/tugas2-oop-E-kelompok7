@@ -110,7 +110,7 @@ public class EventRepository {
         }
     }
 
-    // Get sisa kapasitas per kategori untuk event
+    // Ambil sisa kapasitas per kategori untuk event
     public java.util.Map<String, Integer> getRemainingCapacity(String eventId) throws SQLException {
         String sql = "SELECT category, total - filled AS remaining FROM capacities WHERE event_id = ?";
         try (Connection conn = DatabaseManager.getConnection();

@@ -70,6 +70,7 @@ public class DatabaseManager {
                             + "phone TEXT,"
                             + "role TEXT DEFAULT 'buyer',"
                             + "created_at TEXT DEFAULT (datetime('now'))");
+            
             stmt.execute(
                     "CREATE TABLE IF NOT EXISTS venues ("
                             + "id TEXT PRIMARY KEY,"
@@ -77,6 +78,7 @@ public class DatabaseManager {
                             + "address TEXT NOT NULL,"
                             + "max_capacity INTEGER NOT NULL,"
                             + "created_at TEXT DEFAULT (datetime('now'))");
+            
             stmt.execute(
                     "CREATE TABLE IF NOT EXISTS events ("
                             + "id TEXT PRIMARY KEY,"
@@ -89,6 +91,7 @@ public class DatabaseManager {
                             + "created_at TEXT DEFAULT (datetime('now')),"
                             + "FOREIGN KEY (venue_id) REFERENCES venues(id),"
                             + "FOREIGN KEY (organizer_id) REFERENCES users(id))");
+            
             stmt.execute(
                     "CREATE TABLE IF NOT EXISTS capacities ("
                             + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -97,7 +100,7 @@ public class DatabaseManager {
                             + "total INTEGER NOT NULL,"
                             + "filled INTEGER DEFAULT 0,"
                             + "FOREIGN KEY (event_id) REFERENCES events(id))");
-
+            
             stmt.execute(
                     "CREATE TABLE IF NOT EXISTS tickets ("
                             + "id TEXT PRIMARY KEY,"
@@ -109,7 +112,7 @@ public class DatabaseManager {
                             + "total_price REAL NOT NULL,"
                             + "purchase_date TEXT DEFAULT (date('now')),"
                             + "status TEXT DEFAULT 'active',"
-                            + "refund_amount   REAL DEFAULT 0,"
+                            + "refund_amount REAL DEFAULT 0,"
                             + "FOREIGN KEY (event_id) REFERENCES events(id),"
                             + "FOREIGN KEY (user_id) REFERENCES users(id))");
 

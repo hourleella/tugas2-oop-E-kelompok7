@@ -42,7 +42,7 @@ public class TicketRepository {
         }
     }
 
-    // Get semua tiket milik satu user
+    // Ambil semua tiket milik satu user
     public List<Ticket> findByUserId(String userId) throws SQLException {
         String sql = "SELECT * FROM tickets WHERE user_id = ?";
         try (Connection conn = DatabaseManager.getConnection();
@@ -59,7 +59,7 @@ public class TicketRepository {
         }
     }
 
-    // Get semua tiket untuk satu event
+    // Ambil semua tiket untuk satu event
     public List<Ticket> findByEventId(String eventId) throws SQLException {
         String sql = "SELECT * FROM tickets WHERE event_id = ?";
         try (Connection conn = DatabaseManager.getConnection();
@@ -92,14 +92,14 @@ public class TicketRepository {
     private Ticket mapRowToTicket(ResultSet rs) throws SQLException {
         return new Ticket(
                 rs.getString("id"),
-                rs.getString("event_id"),
-                rs.getString("user_id"),
+                rs.getString("eventId"),
+                rs.getString("userId"),
                 rs.getString("category"),
                 rs.getInt("quantity"),
-                rs.getDouble("unit_price"),
-                rs.getDouble("total_price"),
+                rs.getDouble("unitPrice"),
+                rs.getDouble("totalPrice"),
                 rs.getString("status"),
-                rs.getDouble("refund_amount")
+                rs.getDouble("refundAmount")
         );
     }
 }
