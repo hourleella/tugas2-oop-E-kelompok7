@@ -20,31 +20,13 @@ public class UserService {
             if (userRepository.emailExists(user.getEmail())) {
                 throw new IllegalArgumentException("Error: User dengan email tersebut sudah terdaftar.");
             }
-            User existingUser = userRepository.findById(user.getId());
-            if (existingUser != null) {
-                throw new IllegalArgumentException("Error: User dengan ID tersebut sudah terdaftar.");
-            }
-
-            if (user.getRole() == null || (!user.getRole().equals("customer") && !user.getRole().equals("organizer"))) {
+            if (user.getRole() == null || (!user.getRole().equals("buyer") && !user.getRole().equals("organizer"))) {
                 throw new IllegalArgumentException("Error : Role tidak valid");
             }
 
             userRepository.save(user);
-
         } catch (SQLException e) {
-            throw new RuntimeException("Error occurred while registering user.", e);
-        }
-    }
-
-    public User login(String email, String password) {
-        try {
-            User user = userRepository.findByEmail(email);
-            if (user == null || !user.getPassword().equals(password)) {
-                throw new IllegalArgumentException("Error: Email atau password salah.");
-            }
-            return user;
-        } catch (SQLException e) {
-            throw new RuntimeException("Error : terjadi kesalahan database saat login -" + e.getMessage(), e);
+            throw new RuntimeException("Error occurred while registering user:" + e.getMessage(), e);
         }
     }
 

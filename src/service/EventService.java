@@ -40,14 +40,33 @@ public class EventService {
             if (totalKapasitasInput > venue.getMaxCapacity()) {
                 throw new IllegalArgumentException("Error : Total kapasitas kategori tiket melebihi kapasitas venue (" + venue.getMaxCapacity() + ").");
             }
-            boolean isBentrok = eventRepository.venueIsBooked(event.getVenueId(), event.getDate());
-            if (isBentrok) {
-                throw new IllegalArgumentException("Error : venue sudah digunakan oleh event lain pada tanggal yang sama.");
+            if(eventRepository.venueIsBooked(event.getVenueId(), event.getDate())) {
+                throw new IllegalArgumentException("Error : Venue sudah dibooking pada tanggal tersebut.");
             }
 
             eventRepository.save(event, capacities);
         } catch (SQLException e) {
-            throw new RuntimeException("Error : Terjadi kesalahan saat membuat event" + e.getMessage());
+            throw new RuntimeException("Error database saat membuat event: " + e.getMessage(), e);
+        }
+    }
+
+    public double getEventTotalTiketPrice(String eventId) {
+        try {
+            Event event = eventRepository.findById(eventId);
+            if (event == null) {
+                throw new IllegalArgumentException("Error : Event ID " + eventId + " tidak ditemukan");
+            }
+
+            double totalEventRevenue = 0;
+
+            for (String category : event.getCapacities().keySet()){
+                double pricePerCategory = event.calculateTicketPrice(category);
+                int capacity = event.getCapacities().get(category);
+                totalEventRevenue += pricePerCategory * capacity;
+            }
+            return totalEventRevenue;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error : Terjadi kesalahan saat menghitung total harga tiket" + e.getMessage());
         }
     }
 

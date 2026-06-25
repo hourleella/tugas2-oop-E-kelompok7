@@ -46,7 +46,6 @@ public class TicketService {
             ticket.setStatus("active");
 
             ticketRepository.save(ticket);
-
             ticketRepository.incrementFilledCapacity(ticket.getEventId(), ticket.getCategory(), ticket.getQuantity());
 
         } catch (SQLException e) {
@@ -63,7 +62,9 @@ public class TicketService {
             if ("refunded".equalsIgnoreCase(ticket.getStatus())) {
                 throw new IllegalArgumentException("Error : Ticket ID " + ticketId + " tidak dapat direfund karena statusnya sudah pernah direfund");
             }
+
             Event event = eventRepository.findById(ticket.getEventId());
+            
             if (!(event instanceof Refundable)) {
                 throw new IllegalArgumentException("Error : Event tipe ini tidak mendukung fitur refund");
             }
@@ -78,15 +79,11 @@ public class TicketService {
             }
 
             double persentaseRefund = refundableEvent.calculateRefund((int) selisihHari);
-
             if (persentaseRefund <= 0) {
                 throw new IllegalArgumentException("Error : Kebijakan waktu refund hangus (Kompensasi 0%)");
             }
 
             double jumlahRefundUang = (persentaseRefund / 100) * ticket.getTotalPrice();
-            ticket.setStatus("refunded");
-            ticket.setRefundAmount(jumlahRefundUang);
-
             ticketRepository.updateRefund(ticketId, jumlahRefundUang);
 
         } catch (SQLException e) {
@@ -108,7 +105,7 @@ public class TicketService {
 
     public List<Ticket> getTicketsByUserId(String userId) {
         try {
-            return ticketRepository.findByUserId(userId);
+            return ticketRepository.findAll(null, userId, null);
         } catch (SQLException e) {
             throw new RuntimeException("Error : Terjadi kesalahan saat mengambil data user" + e.getMessage());
         }
