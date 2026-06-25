@@ -30,10 +30,10 @@ public class VenueRepository {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return mapRowToVenue(rs);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRowToVenue(rs);
+                }
             }
             return null;
         }
@@ -45,12 +45,13 @@ public class VenueRepository {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ResultSet rs = ps.executeQuery();
-            List<Venue> list = new ArrayList<>();
-            while (rs.next()) {
-                list.add(mapRowToVenue(rs));
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Venue> list = new ArrayList<>();
+                while (rs.next()) {
+                    list.add(mapRowToVenue(rs));
+                }
+                return list;
             }
-            return list;
         }
     }
 
@@ -75,17 +76,17 @@ public class VenueRepository {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, venueId);
-            ResultSet rs = ps.executeQuery();
-
-            List<String[]> list = new ArrayList<>();
-            while (rs.next()) {
-                list.add(new String[]{
-                        rs.getString("id"),
-                        rs.getString("name"),
-                        rs.getString("date")
-                });
+            try (ResultSet rs = ps.executeQuery()) {
+                List<String[]> list = new ArrayList<>();
+                while (rs.next()) {
+                    list.add(new String[]{
+                            rs.getString("id"),
+                            rs.getString("name"),
+                            rs.getString("date")
+                    });
+                }
+                return list;
             }
-            return list;
         }
     }
 
