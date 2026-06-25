@@ -70,32 +70,22 @@ public class TicketRepository {
         }
     }
 
-    // Ambil semua tiket milik satu user
-    public List<Ticket> findByUserId(String userId) throws SQLException {
-        String sql = "SELECT * FROM tickets WHERE user_id = ?";
+    // Ambil semua tiket dengan filter opsional
+    public List<Ticket> findAll(String eventId, String userId, String status) throws SQLException {
+        String sql = "SELECT * FROM tickets WHERE 1=1";
+        if (eventId != null) sql += " AND event_id = ?";
+        if (userId != null) sql += " AND user_id = ?";
+        if (status != null) sql += " AND status = ?";
+
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, userId);
+            int i = 1;
+            if (eventId != null) ps.setString(i++, eventId);
+            if (userId != null) ps.setString(i++, userId);
+            if (status != null) ps.setString(i++, status);
+
             ResultSet rs = ps.executeQuery();
-
-            List<Ticket> list = new ArrayList<>();
-            while (rs.next()) {
-                list.add(mapRowToTicket(rs));
-            }
-            return list;
-        }
-    }
-
-    // Ambil semua tiket untuk satu event
-    public List<Ticket> findByEventId(String eventId) throws SQLException {
-        String sql = "SELECT * FROM tickets WHERE event_id = ?";
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, eventId);
-            ResultSet rs = ps.executeQuery();
-
             List<Ticket> list = new ArrayList<>();
             while (rs.next()) {
                 list.add(mapRowToTicket(rs));
@@ -120,8 +110,8 @@ public class TicketRepository {
     private Ticket mapRowToTicket(ResultSet rs) throws SQLException {
         return new Ticket(
                 rs.getString("id"),
-                rs.getString("event_Id"),
-                rs.getString("user_Id"),
+                rs.getString("event_id"),
+                rs.getString("user_id"),
                 rs.getString("category"),
                 rs.getInt("quantity"),
                 rs.getDouble("unit_price"),

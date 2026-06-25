@@ -11,14 +11,13 @@ public class UserRepository {
 
     // Save user baru
     public void save(User user) throws SQLException {
-        String sql = "INSERT INTO users (id, name, email, password, phone, role) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (id, name, email, phone, role) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, user.getId());
             ps.setString(2, user.getName());
             ps.setString(3, user.getEmail());
-            ps.setString(4, user.getPassword());
             ps.setString(5, user.getPhone());
             ps.setString(6, user.getRole());
             ps.executeUpdate();
@@ -78,13 +77,12 @@ public class UserRepository {
 
     // Update data user
     public void update(User user) throws SQLException {
-        String sql = "UPDATE users SET name = ?, email = ?, password = ?, phone = ?, role = ? WHERE id = ?";
+        String sql = "UPDATE users SET name = ?, email = ?,, phone = ?, role = ? WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, user.getName());
             ps.setString(2, user.getEmail());
-            ps.setString(3, user.getPassword());
             ps.setString(4, user.getPhone());
             ps.setString(5, user.getRole());
             ps.setString(6, user.getId());
@@ -143,7 +141,6 @@ public class UserRepository {
         user.setId(rs.getString("id"));
         user.setName(rs.getString("name"));
         user.setEmail(rs.getString("email"));
-        user.setPassword(rs.getString("password"));
         user.setPhone(rs.getString("phone"));
         user.setRole(rs.getString("role"));
         user.setCreatedAt(rs.getString("created_at"));

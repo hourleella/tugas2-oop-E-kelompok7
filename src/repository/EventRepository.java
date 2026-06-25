@@ -7,6 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap
 
 public class EventRepository {
 
@@ -113,14 +114,14 @@ public class EventRepository {
     }
 
     // Ambil sisa kapasitas per kategori untuk event
-    public java.util.Map<String, Integer> getRemainingCapacity(String eventId) throws SQLException {
+    public Map<String, Integer> getRemainingCapacity(String eventId) throws SQLException {
         String sql = "SELECT category, total - filled AS remaining FROM capacities WHERE event_id = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, eventId);
             try (ResultSet rs = ps.executeQuery()) {
-                java.util.Map<String, Integer> map = new java.util.HashMap<>();
+                Map<String, Integer> map = new HashMap<>();
                 while (rs.next()) {
                     map.put(rs.getString("category"), rs.getInt("remaining"));
                 }
@@ -153,7 +154,7 @@ public class EventRepository {
         double basePrice = rs.getDouble("base_price");
 
         // load kapasitas event
-        java.util.Map<String, Integer> capacities = loadCapacities(id, conn);
+        Map<String, Integer> capacities = loadCapacities(id, conn);
 
         // instantiate subclass sesuai dengan type
         switch (type) {
@@ -164,13 +165,13 @@ public class EventRepository {
         }
     }
 
-    private java.util.Map<String, Integer> loadCapacities(String eventId, Connection conn) throws SQLException {
+    private Map<String, Integer> loadCapacities(String eventId, Connection conn) throws SQLException {
         String sql = "SELECT category, total FROM capacities WHERE event_id = ?";
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, eventId);
             try (ResultSet rs = ps.executeQuery()) {
-                java.util.Map<String, Integer> map = new java.util.HashMap<>();
+                Map<String, Integer> map = new HashMap<>();
                 while (rs.next()) {
                     map.put(rs.getString("category"), rs.getInt("total"));
                 }
