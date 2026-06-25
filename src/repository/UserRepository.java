@@ -11,16 +11,32 @@ public class UserRepository {
 
     // Save user baru
     public void save(User user) throws SQLException {
-        String sql = "INSERT INTO users (id, name, email, phone, role) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (id, name, email, password, phone, role) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, user.getId());
             ps.setString(2, user.getName());
             ps.setString(3, user.getEmail());
-            ps.setString(4, user.getPhone());
-            ps.setString(5, user.getRole());
+            ps.setString(4, user.getPassword());
+            ps.setString(5, user.getPhone());
+            ps.setString(6, user.getRole());
             ps.executeUpdate();
+        }
+    }
+
+    public User findByEmail(String email) throws SQLException {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRowToUser(rs);
+                }
+            }
+            return null;
         }
     }
 
@@ -31,10 +47,10 @@ public class UserRepository {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return mapRowToUser(rs);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRowToUser(rs);
+                }
             }
             return null;
         }
@@ -50,26 +66,28 @@ public class UserRepository {
 
             if (role != null) ps.setString(1, role);
 
-            ResultSet rs = ps.executeQuery();
-            List<User> list = new ArrayList<>();
-            while (rs.next()) {
-                list.add(mapRowToUser(rs));
+            try (ResultSet rs = ps.executeQuery()) {
+                List<User> list = new ArrayList<>();
+                while (rs.next()) {
+                    list.add(mapRowToUser(rs));
+                }
+                return list;
             }
-            return list;
         }
     }
 
     // Update data user
     public void update(User user) throws SQLException {
-        String sql = "UPDATE users SET name = ?, email = ?, phone = ?, role = ? WHERE id = ?";
+        String sql = "UPDATE users SET name = ?, email = ?, password = ?, phone = ?, role = ? WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, user.getName());
             ps.setString(2, user.getEmail());
-            ps.setString(3, user.getPhone());
-            ps.setString(4, user.getRole());
-            ps.setString(5, user.getId());
+            ps.setString(3, user.getPassword());
+            ps.setString(4, user.getPhone());
+            ps.setString(5, user.getRole());
+            ps.setString(6, user.getId());
             ps.executeUpdate();
         }
     }
@@ -81,8 +99,9 @@ public class UserRepository {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-            return rs.next() && rs.getInt(1) > 0;
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
         }
     }
 
@@ -93,11 +112,12 @@ public class UserRepository {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, userId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return new int[]{rs.getInt(1), rs.getInt(2)};
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new int[]{rs.getInt(1), rs.getInt(2)};
+                }
+                return new int[]{0, 0};
             }
-            return new int[]{0, 0};
         }
     }
 
@@ -108,23 +128,25 @@ public class UserRepository {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, userId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return new int[]{rs.getInt(1), rs.getInt(2)};
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new int[]{rs.getInt(1), rs.getInt(2)};
+                }
+                return new int[]{0, 0};
             }
-            return new int[]{0, 0};
         }
     }
 
     // Helper: ubah baris database menjadi objek User
     private User mapRowToUser(ResultSet rs) throws SQLException {
-        return new User(
-                rs.getString("id"),
-                rs.getString("name"),
-                rs.getString("email"),
-                rs.getString("phone"),
-                rs.getString("role"),
-                rs.getString("created_at")
-        );
+        User user = new User();
+        user.setId(rs.getString("id"));
+        user.setName(rs.getString("name"));
+        user.setEmail(rs.getString("email"));
+        user.setPassword(rs.getString("password"));
+        user.setPhone(rs.getString("phone"));
+        user.setRole(rs.getString("role"));
+        user.setCreatedAt(rs.getString("created_at"));
+        return user;
     }
 }
