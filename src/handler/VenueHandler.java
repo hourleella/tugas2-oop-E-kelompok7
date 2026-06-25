@@ -4,7 +4,6 @@ import server.Request;
 import server.Response;
 import server.Server;
 import service.VenueService;
-import exception.VenueNotFoundException;
 import model.Venue;
 
 import java.util.List;
@@ -38,10 +37,13 @@ public class VenueHandler {
             String id = req.getPathParam("id");
             Map<String, Object> venueWithEvents = venueService.getVenueByIdWithEvents(id);
             res.sendSuccess(venueWithEvents);
-        } catch (VenueNotFoundException e) {
-            res.sendError(404, e.getMessage());
         } catch (Exception e) {
-            res.sendError(500, "Internal Server Error: " + e.getMessage());
+            // Trik cerdas: Jika pesan error dari service mengandung "not found", return 404
+            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("not found")) {
+                res.sendError(404, e.getMessage());
+            } else {
+                res.sendError(500, "Internal Server Error: " + e.getMessage());
+            }
         }
     }
 
@@ -61,10 +63,12 @@ public class VenueHandler {
             Map<String, Object> body = req.getJSON();
             Venue updatedVenue = venueService.updateVenue(id, body);
             res.sendSuccess(updatedVenue);
-        } catch (VenueNotFoundException e) {
-            res.sendError(404, e.getMessage());
         } catch (Exception e) {
-            res.sendError(400, "Bad Request: " + e.getMessage());
+            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("not found")) {
+                res.sendError(404, e.getMessage());
+            } else {
+                res.sendError(400, "Bad Request: " + e.getMessage());
+            }
         }
     }
 }
