@@ -9,6 +9,34 @@ import java.util.List;
 
 public class TicketRepository {
 
+    public int getRemainingCapacity(String eventId, String category) throws SQLException {
+        String sql = "SELECT (total - filled) AS remaining FROM capacities WHERE event_id = ? AND category = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, eventId);
+            ps.setString(2, category);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("remaining");
+                }
+            }
+        }
+        return 0;
+    }
+
+    public void incrementFilledCapacity(String eventId, String category, int quantity) throws SQLException {
+        String sql = "UPDATE capacities SET filled = filled + ? WHERE event_id = ? AND category = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, quantity);
+            ps.setString(2, eventId);
+            ps.setString(3, category);
+            ps.executeUpdate();
+        }
+    }
+
     // Save tiket baru
     public void save(Ticket ticket) throws SQLException {
         String sql = "INSERT INTO tickets (id, event_id, user_id, category, quantity, unit_price, total_price, status, refund_amount) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', 0)";
@@ -92,14 +120,14 @@ public class TicketRepository {
     private Ticket mapRowToTicket(ResultSet rs) throws SQLException {
         return new Ticket(
                 rs.getString("id"),
-                rs.getString("eventId"),
-                rs.getString("userId"),
+                rs.getString("event_Id"),
+                rs.getString("user_Id"),
                 rs.getString("category"),
                 rs.getInt("quantity"),
-                rs.getDouble("unitPrice"),
-                rs.getDouble("totalPrice"),
+                rs.getDouble("unit_price"),
+                rs.getDouble("total_price"),
                 rs.getString("status"),
-                rs.getDouble("refundAmount")
+                rs.getDouble("refund_amount")
         );
     }
 }
