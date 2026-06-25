@@ -6,6 +6,7 @@ import model.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class EventRepository {
 
@@ -16,10 +17,10 @@ public class EventRepository {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return mapRowToEvent(rs, conn);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRowToEvent(rs, conn);
+                }
             }
             return null;
         }
@@ -38,17 +39,18 @@ public class EventRepository {
             if (type != null) ps.setString(i++, type);
             if (dateFrom != null) ps.setString(i++, dateFrom);
 
-            ResultSet rs = ps.executeQuery();
-            List<Event> list = new ArrayList<>();
-            while (rs.next()) {
-                list.add(mapRowToEvent(rs, conn));
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Event> list = new ArrayList<>();
+                while (rs.next()) {
+                    list.add(mapRowToEvent(rs, conn));
+                }
+                return list;
             }
-            return list;
         }
     }
 
     // Save event baru
-    public void save(Event event) throws SQLException {
+    public void save(Event event, Map<String, Integer> capacities) throws SQLException {
         String sql = "INSERT INTO events (id, type, name, venue_id, organizer_id, date, base_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -64,7 +66,7 @@ public class EventRepository {
         }
 
         // Save kapasitas event
-        saveCapacities(event);
+        saveCapacitiesFromMap(event.getId(), capacities);
     }
 
     // Update event
@@ -95,13 +97,13 @@ public class EventRepository {
     }
 
     // Save baris kapasitas event
-    private void saveCapacities(Event event) throws SQLException {
+    private void saveCapacitiesFromMap(String eventId, Map<String, Integer> capacities) throws SQLException {
         String sql = "INSERT INTO capacities (event_id, category, total, filled) VALUES (?, ?, ?, 0)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            for (var entry : event.getCapacities().entrySet()) {
-                ps.setString(1, event.getId());
+            for (var entry : capacities.entrySet()) {
+                ps.setString(1, eventId);
                 ps.setString(2, entry.getKey());
                 ps.setInt(3, entry.getValue());
                 ps.addBatch();
@@ -117,12 +119,13 @@ public class EventRepository {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, eventId);
-            ResultSet rs = ps.executeQuery();
-            java.util.Map<String, Integer> map = new java.util.HashMap<>();
-            while (rs.next()) {
-                map.put(rs.getString("category"), rs.getInt("remaining"));
+            try (ResultSet rs = ps.executeQuery()) {
+                java.util.Map<String, Integer> map = new java.util.HashMap<>();
+                while (rs.next()) {
+                    map.put(rs.getString("category"), rs.getInt("remaining"));
+                }
+                return map;
             }
-            return map;
         }
     }
 
@@ -163,13 +166,16 @@ public class EventRepository {
 
     private java.util.Map<String, Integer> loadCapacities(String eventId, Connection conn) throws SQLException {
         String sql = "SELECT category, total FROM capacities WHERE event_id = ?";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, eventId);
-        ResultSet rs = ps.executeQuery();
-        java.util.Map<String, Integer> map = new java.util.HashMap<>();
-        while (rs.next()) {
-            map.put(rs.getString("category"), rs.getInt("total"));
+        
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, eventId);
+            try (ResultSet rs = ps.executeQuery()) {
+                java.util.Map<String, Integer> map = new java.util.HashMap<>();
+                while (rs.next()) {
+                    map.put(rs.getString("category"), rs.getInt("total"));
+                }
+                return map;
+            }
         }
-        return map;
     }
 }

@@ -8,6 +8,7 @@ import repository.UserRepository;
 import repository.VenueRepository;
 
 import java.util.List;
+import java.sql.SQLException;
 import java.util.Map;
 
 public class EventService {
@@ -22,40 +23,51 @@ public class EventService {
     }
 
     public void createEvent(Event event, Map<String, Integer> capacities) {
-        
-        User organizer = userRepository.findById(event.getOrganizerId());
-        if (organizer == null || !"organizer".equalsIgnoreCase(organizer.getRole())) {
-            throw new IllegalArgumentException("Error : User bukan organizer atau tidak ditemukan");
-        }
-        Venue venue = venueRepository.findById(event.getVenueId());
-        if (venue == null) {
-            throw new IllegalArgumentException("Error : Venue tidak ditemukan");
-        }
+        try{
+            User organizer = userRepository.findById(event.getOrganizerId());
+            if (organizer == null || !"organizer".equalsIgnoreCase(organizer.getRole())) {
+                throw new IllegalArgumentException("Error : User bukan organizer atau tidak ditemukan");
+            }
+            Venue venue = venueRepository.findById(event.getVenueId());
+            if (venue == null) {
+                throw new IllegalArgumentException("Error : Venue tidak ditemukan");
+            }
 
-        int totalKapasitasInput = 0;
-        for (int kapasitasKategori : capacities.values()) {
-            totalKapasitasInput += kapasitasKategori;
-        }
-        if (totalKapasitasInput > venue.getMaxCapacity()) {
-            throw new IllegalArgumentException("Error : Total kapasitas kategori tiket melebihi kapasitas venue (" + venue.getMaxCapacity() + ").");
-        }
-        boolean isBentrok = eventRepository.checkScheduleConflict(event.getVenueId(), event.getDate());
-        if (isBentrok) {
-            throw new IllegalArgumentException("Error : venue sudah digunakan oleh event lain pada tanggal yang sama.");
-        }
+            int totalKapasitasInput = 0;
+            for (int kapasitasKategori : capacities.values()) {
+                totalKapasitasInput += kapasitasKategori;
+            }
+            if (totalKapasitasInput > venue.getMaxCapacity()) {
+                throw new IllegalArgumentException("Error : Total kapasitas kategori tiket melebihi kapasitas venue (" + venue.getMaxCapacity() + ").");
+            }
+            boolean isBentrok = eventRepository.venueIsBooked(event.getVenueId(), event.getDate());
+            if (isBentrok) {
+                throw new IllegalArgumentException("Error : venue sudah digunakan oleh event lain pada tanggal yang sama.");
+            }
 
-        eventRepository.save(event, capacities);
+            eventRepository.save(event, capacities);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error : Terjadi kesalahan saat membuat event" + e.getMessage());
+        }
     }
 
     public Event getEventById(String id) {
-        Event event = eventRepository.findById(id);
-        if (event == null) {
-            throw new IllegalArgumentException("Error : Event ID " + id + " tidak ditemukan");
+        try{
+            Event event = eventRepository.findById(id);
+            if (event == null) {
+                throw new IllegalArgumentException("Error : Event ID " + id + " tidak ditemukan");
+            }
+            return event;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error : Terjadi kesalahan saat mengambil data event" + e.getMessage());
         }
-        return event;
     }
 
     public List<Event> getAllEvents(String type, String dateFrom) {
-        return eventRepository.findAll(type, dateFrom);
+        try {
+            return eventRepository.findAll(type, dateFrom);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error : Terjadi kesalahan saat mengambil data event" + e.getMessage());
+        }
     }
 }
