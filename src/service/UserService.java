@@ -5,12 +5,21 @@ import repository.UserRepository;
 import java.util.HashMap;
 import java.util.Map;
 import java.sql.SQLException;
+import java.util.List;
 
 public class UserService {
     private UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    public List<User> getAllUsers(String role) {
+        try {
+            return userRepository.findAll(role);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error : terjadi kesalahan database saat mengambil semua user -" + e.getMessage(), e);
+        }
     }
 
     public void registerUser(User user) {
@@ -35,7 +44,7 @@ public class UserService {
         try {
             User user = userRepository.findById(id);
             if (user == null) {
-                throw new IllegalArgumentException("Error : User dengan ID " + id + " tidak ditemukan");
+                throw new IllegalArgumentException("Error : User dengan ID " + id + " not found.");
             }
 
             Map<String, Object> result = new HashMap<>();

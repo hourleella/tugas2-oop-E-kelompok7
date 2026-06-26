@@ -5,6 +5,8 @@ import repository.VenueRepository;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class VenueService {
     private VenueRepository venueRepository;
@@ -51,6 +53,23 @@ public class VenueService {
             return venueRepository.getEventsByVenueId(venueId);
         } catch (SQLException e) {
             throw new RuntimeException("Error : terjadi kesalahan database saat mengambil event di venue - " + e.getMessage(), e);
+        }
+    }
+
+    public Map<String, Object> getVenueByIdWithEvents(String venueId) {
+        try {
+            Venue venue = venueRepository.findById(venueId);
+            if (venue == null) {
+                throw new IllegalArgumentException("Error : Venue dengan ID " + venueId + " tidak ditemukan.");
+            }
+
+            List<String[]> events = venueRepository.getEventsByVenueId(venueId);
+            Map<String, Object> result = new HashMap<>();
+            result.put("venue", venue);
+            result.put("events", events);
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error : terjadi kesalahan database saat mengambil venue dan event - " + e.getMessage(), e);
         }
     }
 

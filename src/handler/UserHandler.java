@@ -4,7 +4,6 @@ import server.Request;
 import server.Response;
 import server.Server;
 import service.UserService;
-import exception.UserNotFoundException;
 import model.User;
 
 import java.util.List;
@@ -39,7 +38,7 @@ public class UserHandler {
             String id = req.getPathParam("id");
             Map<String, Object> userWithSummary = userService.getUserByIdWithSummary(id);
             res.sendSuccess(userWithSummary);
-        } catch (UserNotFoundException e) { // Spesifik ditangkap lebih dulu
+        } catch (IllegalArgumentException e) { // Spesifik ditangkap lebih dulu
             res.sendError(404, e.getMessage());
         } catch (Exception e) { // Umum ditangkap terakhir
             res.sendError(500, "Internal Server Error: " + e.getMessage());
@@ -74,10 +73,12 @@ public class UserHandler {
             updatedUser.setRole((String) body.get("role"));
             userService.updateUser(id, updatedUser);
             res.sendSuccess(updatedUser);
-        } catch (UserNotFoundException e) {
-            res.sendError(404, e.getMessage());
         } catch (Exception e) {
-            res.sendError(400, "Bad Request: " + e.getMessage());
+           if(e.getMessage() != null && e.getMessage().contains("not found")) {
+                res.sendError(404, "Not Found: " + e.getMessage());
+            } else {
+                res.sendError(400, "Bad Request: " + e.getMessage());
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ import server.Request;
 import server.Response;
 import server.Server;
 import service.TicketService;
+import model.Ticket;
 import exception.TicketSoldOutException;
 import exception.RefundNotAllowedException;
 
@@ -47,18 +48,27 @@ public class TicketHandler {
     private void buyTicket(Request req, Response res) {
         try {
             Map<String, Object> body = req.getJSON();
-            res.sendCreated(ticketService.purchaseTicket(body));
+            Ticket ticket = new Ticket();
+            ticket.setEventId((String) body.get("eventId"));
+            ticket.setUserId((String) body.get("userId"));
+            ticket.setCategory((String) body.get("category"));
+            ticket.setQuantity((int) body.get("quantity"));
+
+            ticketService.buyTicket(ticket);
+            res.sendSuccess("Ticket purchased successfully.");
         } catch (TicketSoldOutException e) {
             res.sendError(400, e.getMessage());
         } catch (Exception e) {
-            res.sendError(400, "Failed to process ticket purchase: " + e.getMessage());
+            res.sendError(500, "Failed to process ticket purchase: " + e.getMessage());
         }
     }
 
     private void refundTicket(Request req, Response res) {
         try {
             String id = req.getPathParam("id");
-            res.sendSuccess(ticketService.processRefund(id));
+            ticketService.refundTicket(id);
+
+            res.sendSuccess("Ticket refunded successfully.");
         } catch (RefundNotAllowedException e) {
             res.sendError(400, e.getMessage());
         } catch (Exception e) {
