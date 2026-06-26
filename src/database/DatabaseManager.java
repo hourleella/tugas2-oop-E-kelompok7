@@ -69,7 +69,7 @@ public class DatabaseManager {
                             + "email TEXT NOT NULL UNIQUE,"
                             + "phone TEXT,"
                             + "role TEXT DEFAULT 'buyer',"
-                            + "created_at TEXT DEFAULT (datetime('now'))");
+                            + "created_at TEXT DEFAULT (datetime('now')))");
             
             stmt.execute(
                     "CREATE TABLE IF NOT EXISTS venues ("
@@ -77,7 +77,7 @@ public class DatabaseManager {
                             + "name TEXT NOT NULL,"
                             + "address TEXT NOT NULL,"
                             + "max_capacity INTEGER NOT NULL,"
-                            + "created_at TEXT DEFAULT (datetime('now'))");
+                            + "created_at TEXT DEFAULT (datetime('now')))");
             
             stmt.execute(
                     "CREATE TABLE IF NOT EXISTS events ("
