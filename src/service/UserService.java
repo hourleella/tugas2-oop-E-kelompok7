@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.sql.SQLException;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class UserService {
     private UserRepository userRepository;
@@ -34,6 +36,8 @@ public class UserService {
                 throw new IllegalArgumentException("Error : Role tidak valid");
             }
 
+            String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            user.setCreatedAt(currentTime);
             userRepository.save(user);
         } catch (SQLException e) {
             throw new RuntimeException("Error occurred while registering user:" + e.getMessage(), e);
