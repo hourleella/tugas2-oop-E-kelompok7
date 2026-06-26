@@ -2,10 +2,8 @@ package service;
 
 import model.User;
 import repository.UserRepository;
-
-import java.util.HashMap
-import java.util.Map
-
+import java.util.HashMap;
+import java.util.Map;
 import java.sql.SQLException;
 
 public class UserService {

@@ -66,7 +66,7 @@ public class EventService {
     }
 
     public Event getEventById(String id) throws EventNotFoundException {
-        return getEventByIdInternal(id);
+        return getEventById(id);
     }
 
     public List<Event> getAllEvents(String type, String dateFrom) {

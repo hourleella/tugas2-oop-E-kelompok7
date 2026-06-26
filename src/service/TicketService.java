@@ -7,6 +7,8 @@ import model.Refundable;
 import repository.EventRepository;
 import repository.UserRepository;
 import repository.TicketRepository;
+import exception.TicketSoldOutException;
+import exception.RefundNotAllowedException;
 
 import java.util.List;
 import java.util.HashMap;
@@ -27,7 +29,19 @@ public class TicketService {
         this.userRepository = userRepository;
     }
 
-    public void buyTicket(Ticket ticket) {
+    public List<Ticket> getAllTickets(String eventId, String userId, String status) {
+        try {
+            String fillterEvent = (eventId != null && !eventId.trim().isEmpty()) ? eventId : null;
+            String fillterUser = (userId != null && !userId.trim().isEmpty()) ? userId : null;
+            String fillterStatus = (status != null && !status.trim().isEmpty()) ? status : null;
+            
+            return ticketRepository.findAll(fillterEvent, fillterUser, fillterStatus);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error : Terjadi kesalahan saat mengambil data tiket" + e.getMessage());
+        }
+    }
+
+    public void buyTicket(Ticket ticket) throws TicketSoldOutException {
         try{
             User customer = userRepository.findById(ticket.getUserId());
             if (customer == null){
@@ -37,10 +51,12 @@ public class TicketService {
             if (event == null) {
                 throw new IllegalArgumentException("Error : Event tidak ditemukan");
             }
+
             int sisaTiket = ticketRepository.getRemainingCapacity(ticket.getEventId(), ticket.getCategory());
             if (sisaTiket < ticket.getQuantity()) {
-                throw new IllegalArgumentException("Error : Tiket  kategori '" + ticket.getCategory() + "' tidak cukup. Sisa tiket: " + sisaTiket);
+                throw new TicketSoldOutException("Error : Tiket  kategori '" + ticket.getCategory() + "' tidak cukup. Sisa tiket: " + sisaTiket);
             }
+
             double hargaSatuan = event.calculateTicketPrice(ticket.getCategory());
 
             ticket.setUnitPrice(hargaSatuan);
@@ -55,20 +71,20 @@ public class TicketService {
         }
     }
 
-    public void refundTicket(String ticketId) {
+    public void refundTicket(String ticketId) throws RefundNotAllowedException {
         try{
             Ticket ticket = ticketRepository.findById(ticketId);
             if (ticket == null) {
                 throw new IllegalArgumentException("Error : Ticket ID " + ticketId + " tidak ditemukan");
             }
             if ("refunded".equalsIgnoreCase(ticket.getStatus())) {
-                throw new IllegalArgumentException("Error : Ticket ID " + ticketId + " tidak dapat direfund karena statusnya sudah pernah direfund");
+                throw new RefundNotAllowedException("Error : Ticket ID " + ticketId + " tidak dapat direfund karena statusnya sudah pernah direfund");
             }
 
             Event event = eventRepository.findById(ticket.getEventId());
             
             if (!(event instanceof Refundable)) {
-                throw new IllegalArgumentException("Error : Event tipe ini tidak mendukung fitur refund");
+                throw new RefundNotAllowedException("Error : Event tipe ini tidak mendukung fitur refund");
             }
 
             Refundable refundableEvent = (Refundable) event;
@@ -77,12 +93,12 @@ public class TicketService {
             long selisihHari = ChronoUnit.DAYS.between(hariIni, tanggalEvent);
 
             if (selisihHari < 0) {
-                throw new IllegalArgumentException("Error : Refund tidak dapat dilakukan karena sudah melewati batas waktu refund");
+                throw new RefundNotAllowedException("Error : Refund tidak dapat dilakukan karena sudah melewati batas waktu refund");
             }
 
             double persentaseRefund = refundableEvent.calculateRefund((int) selisihHari);
             if (persentaseRefund <= 0) {
-                throw new IllegalArgumentException("Error : Kebijakan waktu refund hangus (Kompensasi 0%)");
+                throw new RefundNotAllowedException("Error : Kebijakan waktu refund hangus (Kompensasi 0%)");
             }
 
             double jumlahRefundUang = (persentaseRefund / 100) * ticket.getTotalPrice();
