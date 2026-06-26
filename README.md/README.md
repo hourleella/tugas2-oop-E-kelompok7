@@ -63,6 +63,7 @@ Berikut adalah langkah-langkah untuk menjalankan server mulai dari proses *clone
 
 ## 3. Daftar endpoint API lengkap beserta contoh request dan response
 Berikut adalah 18 daftar endpoint kami :
+```
 | 1 | GET | /api/users | User |
 | 2 | GET | /api/users/{id} | User |
 | 3 | POST | /api/users | User |
@@ -81,8 +82,10 @@ Berikut adalah 18 daftar endpoint kami :
 | 16 | PUT | /api/tickets/{id}/refund | Ticket |
 | 17 | GET | /api/events/price-summary | Report |
 | 18 | GET | /api/reports/sales?eventId={id} | Report |
+```
 
 ## 4. Struktur Proyek
+```
 project/
 |-- lib/                           # JAR library (Jackson Databind & SQLite JDBC Driver)
 +-- src/
@@ -129,6 +132,7 @@ project/
     |-- EventNotFoundException.java # Exception kustom saat Event ID yang dicari di database tidak ditemukan.
     |-- TicketSoldOutException.java # Exception kustom saat kuota atau kapasitas kursi suatu event sudah habis terjual.
     +-- RefundNotAllowedException.java # Exception kustom saat pembatalan tiket melanggar aturan bisnis (misal: tipe SportMatch).
+```
 
 ## Tabel pembagian tugas anggota
 | Anggota |    NIM     | Tanggung Jawab                                                                      |
