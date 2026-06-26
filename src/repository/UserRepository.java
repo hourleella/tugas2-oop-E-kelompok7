@@ -77,7 +77,7 @@ public class UserRepository {
 
     // Update data user
     public void update(User user) throws SQLException {
-        String sql = "UPDATE users SET name = ?, email = ?,, phone = ?, role = ? WHERE id = ?";
+        String sql = "UPDATE users SET name = ?, email = ?, phone = ?, role = ? WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
