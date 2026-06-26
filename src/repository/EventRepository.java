@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap
+import java.util.HashMap;
 
 public class EventRepository {
 
@@ -15,7 +15,7 @@ public class EventRepository {
     public Event findById(String id) throws SQLException {
         String sql = "SELECT * FROM events WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -30,15 +30,19 @@ public class EventRepository {
     // Get semua events dengan filter opsional
     public List<Event> findAll(String type, String dateFrom) throws SQLException {
         String sql = "SELECT * FROM events WHERE 1=1";
-        if (type != null) sql += " AND type = ?";
-        if (dateFrom != null) sql += " AND date >= ?";
+        if (type != null)
+            sql += " AND type = ?";
+        if (dateFrom != null)
+            sql += " AND date >= ?";
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             int i = 1;
-            if (type != null) ps.setString(i++, type);
-            if (dateFrom != null) ps.setString(i++, dateFrom);
+            if (type != null)
+                ps.setString(i++, type);
+            if (dateFrom != null)
+                ps.setString(i++, dateFrom);
 
             try (ResultSet rs = ps.executeQuery()) {
                 List<Event> list = new ArrayList<>();
@@ -54,7 +58,7 @@ public class EventRepository {
     public void save(Event event, Map<String, Integer> capacities) throws SQLException {
         String sql = "INSERT INTO events (id, type, name, venue_id, organizer_id, date, base_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, event.getId());
             ps.setString(2, event.getType());
@@ -74,7 +78,7 @@ public class EventRepository {
     public void update(Event event) throws SQLException {
         String sql = "UPDATE events SET name = ?, date = ?, base_price = ? WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, event.getName());
             ps.setString(2, event.getDate());
@@ -88,7 +92,7 @@ public class EventRepository {
     public boolean venueIsBooked(String venueId, String date) throws SQLException {
         String sql = "SELECT COUNT(*) FROM events WHERE venue_id = ? AND date = ?";
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, venueId);
             ps.setString(2, date);
@@ -101,7 +105,7 @@ public class EventRepository {
     private void saveCapacitiesFromMap(String eventId, Map<String, Integer> capacities) throws SQLException {
         String sql = "INSERT INTO capacities (event_id, category, total, filled) VALUES (?, ?, ?, 0)";
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             for (var entry : capacities.entrySet()) {
                 ps.setString(1, eventId);
@@ -117,7 +121,7 @@ public class EventRepository {
     public Map<String, Integer> getRemainingCapacity(String eventId) throws SQLException {
         String sql = "SELECT category, total - filled AS remaining FROM capacities WHERE event_id = ?";
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, eventId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -134,7 +138,7 @@ public class EventRepository {
     public void fillCapacity(String eventId, String category, int quantity) throws SQLException {
         String sql = "UPDATE capacities SET filled = filled + ? WHERE event_id = ? AND category = ?";
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, quantity);
             ps.setString(2, eventId);
@@ -158,16 +162,20 @@ public class EventRepository {
 
         // instantiate subclass sesuai dengan type
         switch (type) {
-            case "concert": return new Concert(id, name, venueId, organizerId, date, basePrice, capacities);
-            case "seminar": return new Seminar(id, name, venueId, organizerId, date, basePrice, capacities);
-            case "sport_match": return new SportMatch(id, name, venueId, organizerId, date, basePrice, capacities);
-            default: throw new SQLException("Unknown event type: " + type);
+            case "concert":
+                return new Concert(id, name, venueId, organizerId, date, basePrice, capacities);
+            case "seminar":
+                return new Seminar(id, name, venueId, organizerId, date, basePrice, capacities);
+            case "sport_match":
+                return new SportMatch(id, name, venueId, organizerId, date, basePrice, capacities);
+            default:
+                throw new SQLException("Unknown event type: " + type);
         }
     }
 
     private Map<String, Integer> loadCapacities(String eventId, Connection conn) throws SQLException {
         String sql = "SELECT category, total FROM capacities WHERE event_id = ?";
-        
+
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, eventId);
             try (ResultSet rs = ps.executeQuery()) {
