@@ -49,7 +49,13 @@ public class UserHandler {
     private void createUser(Request req, Response res) {
         try {
             Map<String, Object> body = req.getJSON();
-            User newUser = userService.createUser(body);
+            User newUser = new User();
+            newUser.setId("USR-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+            newUser.setName((String) body.get("name"));
+            newUser.setEmail((String) body.get("email"));
+            newUser.setPhone((String) body.get("phone"));
+            newUser.setRole((String) body.get("role"));
+            userService.registerUser(newUser);
             res.sendCreated(newUser);
         } catch (Exception e) {
             res.sendError(400, "Bad Request: " + e.getMessage());
@@ -60,7 +66,13 @@ public class UserHandler {
         try {
             String id = req.getPathParam("id");
             Map<String, Object> body = req.getJSON();
-            User updatedUser = userService.updateUser(id, body);
+            User updatedUser = new User();
+            updatedUser.setId(id);
+            updatedUser.setName((String) body.get("name"));
+            updatedUser.setEmail((String) body.get("email"));
+            updatedUser.setPhone((String) body.get("phone"));
+            updatedUser.setRole((String) body.get("role"));
+            userService.updateUser(id, updatedUser);
             res.sendSuccess(updatedUser);
         } catch (UserNotFoundException e) {
             res.sendError(404, e.getMessage());
