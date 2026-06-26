@@ -66,7 +66,12 @@ public class VenueHandler {
         try {
             String id = req.getPathParam("id");
             Map<String, Object> body = req.getJSON();
-            Venue updatedVenue = venueService.updateVenue(id, body);
+            Venue updatedVenue = new Venue();
+            updatedVenue.setId(id);
+            updatedVenue.setName((String) body.get("name"));
+            updatedVenue.setAddress((String) body.get("address"));
+            updatedVenue.setMaxCapacity((int) body.get("maxCapacity"));
+            venueService.updateVenue(id, updatedVenue);
             res.sendSuccess(updatedVenue);
         } catch (Exception e) {
             if (e.getMessage() != null && e.getMessage().toLowerCase().contains("not found")) {
