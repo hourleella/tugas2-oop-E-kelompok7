@@ -134,6 +134,30 @@ public class App {
         System.out.printf("  curl http://localhost:%d/api/contoh%n", port);
         System.out.printf("  curl http://localhost:%d/api/contoh/CTH-001%n", port);
         System.out.printf("  curl -X POST http://localhost:%d/api/contoh -H \"Content-Type: application/json\" -d '{\"nama\": \"Test\"}'%n%n", port);
+        // Inisialisasi repositories
+        repository.UserRepository userRepository = new repository.UserRepository();
+        repository.VenueRepository venueRepository = new repository.VenueRepository();
+        repository.EventRepository eventRepository = new repository.EventRepository();
+        repository.TicketRepository ticketRepository = new repository.TicketRepository();
+
+        // Inisialisasi services
+        service.UserService userService = new service.UserService(userRepository);
+        service.VenueService venueService = new service.VenueService(venueRepository);
+        service.EventService eventService = new service.EventService(eventRepository, userRepository, venueRepository);
+        service.TicketService ticketService = new service.TicketService(ticketRepository, eventRepository, userRepository);
+
+        // Daftarkan routes
+        handler.UserHandler userHandler = new handler.UserHandler(userService);
+        userHandler.registerRoutes(server);
+
+        handler.VenueHandler venueHandler = new handler.VenueHandler(venueService);
+        venueHandler.registerRoutes(server);
+
+        handler.EventHandler eventHandler = new handler.EventHandler(eventService);
+        eventHandler.registerRoutes(server);
+
+        handler.TicketHandler ticketHandler = new handler.TicketHandler(ticketService);
+        ticketHandler.registerRoutes(server);
         server.start();
     }
 }
