@@ -135,6 +135,6 @@ project/
 |---------|------------|-------------------------------------------------------------------------------------|
 | Ella    | 2505551027 | Model: Concert.java, Seminar.java, Event.java, Refundable.java                      |
 | Nanda   | 2505551110 | Model: SportMatch.java, User.java, Venue.java, Ticket.java                          |
-| Alisha  | 2505551063 | Repository: EventRepository.java, TicketRepository.java, DatabaseManager            |
+| Alisha  | 2505551063 | Repository: semua repository. DatabaseManager                                       |
 | Deswita | 2505551125 | Service: EventService.java, TicketService.java, UserService.java, VenueService.java |
 | Andre   | 2505551034 | Handler: semua handler. Exception classes.                                          |
