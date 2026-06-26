@@ -66,7 +66,15 @@ public class EventService {
     }
 
     public Event getEventById(String id) throws EventNotFoundException {
-        return getEventById(id);
+        try{
+            Event event = eventRepository.findById(id);
+            if (event == null) {
+                throw new EventNotFoundException("Event ID " + id + " tidak ditemukan");
+            }
+            return event;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error : Terjadi kesalahan saat mengambil data event" + e.getMessage());
+        }
     }
 
     public List<Event> getAllEvents(String type, String dateFrom) {
