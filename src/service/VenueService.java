@@ -40,22 +40,7 @@ public class VenueService {
             throw new RuntimeException("Error : terjadi kesalahan database saat mengambil semua venue - " + e.getMessage(), e);
         }
     }
-
-    public List<String[]> getEventByVenueId(String venueId) {
-        try {
-            if (venueId == null || venueId.trim().isEmpty()) {
-                throw new IllegalArgumentException("Error : ID venue tidak boleh kosong.");
-            }
-            Venue venue = venueRepository.findById(venueId);
-            if (venue == null) {
-                throw new IllegalArgumentException("Error : Venue dengan ID " + venueId + " tidak ditemukan.");
-            }
-            return venueRepository.getEventsByVenueId(venueId);
-        } catch (SQLException e) {
-            throw new RuntimeException("Error : terjadi kesalahan database saat mengambil event di venue - " + e.getMessage(), e);
-        }
-    }
-
+    
     public Map<String, Object> getVenueByIdWithEvents(String venueId) {
         try {
             Venue venue = venueRepository.findById(venueId);

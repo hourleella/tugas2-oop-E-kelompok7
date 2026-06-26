@@ -5,6 +5,9 @@ import server.Response;
 import server.Server;
 import service.EventService;
 import model.Event;
+import model.Concert;
+import model.Seminar;
+import model.SportMatch;
 import exception.EventNotFoundException;
 
 import java.util.Map;
@@ -55,14 +58,22 @@ public class EventHandler {
     private void createEvent(Request req, Response res) {
         try {
             Map<String, Object> body = req.getJSON();
-            Event event = new Event();
-            event.setName((String) body.get("name"));
-            event.setType((String) body.get("type"));
-            event.setDate((String) body.get("date"));
-            event.setVenueId((String) body.get("venueId"));
-            event.setOrganizerId((String) body.get("organizerId"));
-
+            String type = (String) body.get("type");
+            String id = "EVT-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+            String name = (String) body.get("name");
+            String venueId = (String) body.get("venueId");
+            String organizerId = (String) body.get("organizerId");
+            String date = (String) body.get("date");
+            double basePrice = ((Number) body.get("basePrice")).doubleValue();
             Map<String, Integer> capacities = (Map<String, Integer>) body.get("capacities");
+
+            Event event;
+            switch (type) {
+                case "concert": event = new Concert(id, name, venueId, organizerId, date, basePrice, capacities); break;
+                case "seminar": event = new Seminar(id, name, venueId, organizerId, date, basePrice, capacities); break;
+                case "sport_match": event = new SportMatch(id, name, venueId, organizerId, date, basePrice, capacities); break;
+                default: res.sendError(400, "Tipe event tidak valid"); return;
+            }
 
             eventService.createEvent(event, capacities);
             res.sendCreated(event);
@@ -77,14 +88,12 @@ public class EventHandler {
         try {
             String id = req.getPathParam("id");
             Map<String, Object> body = req.getJSON();
-
-            Event updatedEvent = new Event();
-            updatedEvent.setId(id);
-            updatedEvent.setName((String) body.get("name"));
-            updatedEvent.setType((String) body.get("type"));
-            updatedEvent.setDate((String) body.get("date"));
-            eventService.updateEvent(id, updatedEvent);
-            res.sendSuccess("Event updated successfully.");
+            Event existing = eventService.getEventById(id);
+            existing.setName((String) body.get("name"));
+            existing.setDate((String) body.get("date"));
+            existing.setBasePrice(((Number) body.get("basePrice")).doubleValue());
+            eventService.updateEvent(existing);
+            res.sendSuccess(existing);
         } catch (EventNotFoundException e) {
             res.sendError(404, e.getMessage());
         } catch (Exception e) {
