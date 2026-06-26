@@ -37,4 +37,16 @@ public class UserService {
             throw new RuntimeException("Error : terjadi kesalahan database saat mengambil user -" + e.getMessage(), e);
         }
     }
+
+    public void updateUser(String id, User updatedUser) {
+        try {
+            User existingUser = userRepository.findById(id);
+            if (existingUser == null) {
+                throw new IllegalArgumentException("Error : User dengan ID tersebut tidak ditemukan.");
+            }
+            userRepository.update(updatedUser);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error : terjadi kesalahan database saat update user -" + e.getMessage(), e);
+        }
+    }
 }

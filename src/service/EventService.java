@@ -6,8 +6,11 @@ import model.Venue;
 import repository.EventRepository;
 import repository.UserRepository;
 import repository.VenueRepository;
+import exception.EventNotFoundException;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -50,36 +53,20 @@ public class EventService {
         }
     }
 
-    public double getEventTotalTiketPrice(String eventId) {
+    public Event getEventTotalTiketPrice(String eventId) throws EventNotFoundException {
         try {
             Event event = eventRepository.findById(eventId);
             if (event == null) {
-                throw new IllegalArgumentException("Error : Event ID " + eventId + " tidak ditemukan");
-            }
-
-            double totalEventRevenue = 0;
-
-            for (String category : event.getCapacities().keySet()){
-                double pricePerCategory = event.calculateTicketPrice(category);
-                int capacity = event.getCapacities().get(category);
-                totalEventRevenue += pricePerCategory * capacity;
-            }
-            return totalEventRevenue;
-        } catch (SQLException e) {
-            throw new RuntimeException("Error : Terjadi kesalahan saat menghitung total harga tiket" + e.getMessage());
-        }
-    }
-
-    public Event getEventById(String id) {
-        try{
-            Event event = eventRepository.findById(id);
-            if (event == null) {
-                throw new IllegalArgumentException("Error : Event ID " + id + " tidak ditemukan");
+                throw new EventNotFoundException("Event ID " + eventId + " tidak ditemukan");
             }
             return event;
         } catch (SQLException e) {
             throw new RuntimeException("Error : Terjadi kesalahan saat mengambil data event" + e.getMessage());
         }
+    }
+
+    public Event getEventById(String id) throws EventNotFoundException {
+        return getEventByIdInternal(id);
     }
 
     public List<Event> getAllEvents(String type, String dateFrom) {
@@ -111,6 +98,18 @@ public class EventService {
             return result;
         } catch (SQLException e) {
             throw new RuntimeException("Error : Terjadi kesalahan saat mengambil price summary" + e.getMessage());
+        }
+    }
+
+    public void updateEvent(String id, Event updatedEvent) throws EventNotFoundException {
+        try {
+            Event existingEvent = eventRepository.findById(id);
+            if (existingEvent == null) {
+                throw new EventNotFoundException("Event ID " + id + " tidak ditemukan");
+            }
+            eventRepository.update(updatedEvent);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error database saat memperbarui event: " + e.getMessage(), e);
         }
     }
 }

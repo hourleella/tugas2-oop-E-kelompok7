@@ -18,11 +18,9 @@ public class VenueService {
             if (venue == null){
                 throw new IllegalArgumentException("Error : Data venue tidak boleh null.");
             } 
-            
             if (venue.getName() == null || venue.getName().trim().isEmpty() || venue.getAddress() == null || venue.getAddress().trim().isEmpty()) {
                 throw new IllegalArgumentException("Error :Nama dan alamat tempat harus diisi.");
             }
-
             if (venue.getMaxCapacity() <= 0) {
                 throw new IllegalArgumentException("Error : Kapasitas maksimum harus lebih besar dari 0.");
             }
@@ -53,6 +51,18 @@ public class VenueService {
             return venueRepository.getEventsByVenueId(venueId);
         } catch (SQLException e) {
             throw new RuntimeException("Error : terjadi kesalahan database saat mengambil event di venue - " + e.getMessage(), e);
+        }
+    }
+
+    public void updateVenue(String id, Venue updatedVenue) {
+        try {
+            Venue existingVenue = venueRepository.findById(id);
+            if (existingVenue == null) {
+                throw new IllegalArgumentException("Error : Venue dengan ID tersebut tidak ditemukan.");
+            }
+            venueRepository.update(updatedVenue);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error : terjadi kesalahan database saat update venue -" + e.getMessage(), e);
         }
     }
 }
