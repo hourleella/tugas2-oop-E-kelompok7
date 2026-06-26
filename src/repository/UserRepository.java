@@ -18,8 +18,8 @@ public class UserRepository {
             ps.setString(1, user.getId());
             ps.setString(2, user.getName());
             ps.setString(3, user.getEmail());
-            ps.setString(5, user.getPhone());
-            ps.setString(6, user.getRole());
+            ps.setString(4, user.getPhone());
+            ps.setString(5, user.getRole());
             ps.executeUpdate();
         }
     }
@@ -83,9 +83,9 @@ public class UserRepository {
 
             ps.setString(1, user.getName());
             ps.setString(2, user.getEmail());
-            ps.setString(4, user.getPhone());
-            ps.setString(5, user.getRole());
-            ps.setString(6, user.getId());
+            ps.setString(3, user.getPhone());
+            ps.setString(4, user.getRole());
+            ps.setString(5, user.getId());
             ps.executeUpdate();
         }
     }
