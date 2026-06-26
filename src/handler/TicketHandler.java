@@ -49,7 +49,7 @@ public class TicketHandler {
         try {
             Map<String, Object> body = req.getJSON();
             Ticket ticket = new Ticket();
-            ticket.setId("TKT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+            ticket.setId("TKT-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase());
             ticket.setEventId((String) body.get("eventId"));
             ticket.setUserId((String) body.get("userId"));
             ticket.setCategory((String) body.get("category"));
