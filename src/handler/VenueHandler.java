@@ -50,7 +50,12 @@ public class VenueHandler {
     private void createVenue(Request req, Response res) {
         try {
             Map<String, Object> body = req.getJSON();
-            Venue newVenue = venueService.createVenue(body);
+            Venue newVenue = new Venue();
+            newVenue.setId("VNU-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+            newVenue.setName((String) body.get("name"));
+            newVenue.setAddress((String) body.get("address"));
+            newVenue.setMaxCapacity((int) body.get("maxCapacity"));
+            venueService.createVenue(newVenue);
             res.sendCreated(newVenue);
         } catch (Exception e) {
             res.sendError(400, "Bad Request: " + e.getMessage());

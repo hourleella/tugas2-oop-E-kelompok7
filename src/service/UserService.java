@@ -3,6 +3,9 @@ package service;
 import model.User;
 import repository.UserRepository;
 
+import java.util.HashMap
+import java.util.Map
+
 import java.sql.SQLException;
 
 public class UserService {
@@ -30,9 +33,35 @@ public class UserService {
         }
     }
 
-    public User getUserById(String id) {
+    public Map<String, Object> getUserByIdWithSummary(String id) {
         try {
-            return userRepository.findById(id);
+            User user = userRepository.findById(id);
+            if (user == null) {
+                throw new IllegalArgumentException("Error : User dengan ID " + id + " tidak ditemukan");
+            }
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("id", user.getId());
+            result.put("name", user.getName());
+            result.put("email", user.getEmail());
+            result.put("phone", user.getPhone());
+            result.put("role", user.getRole());
+
+            if ("organizer".equals(user.getRole())) {
+                int[] summary = userRepository.getOrganizerSummary(id);
+                Map<String, Object> summaryMap = new HashMap<>();
+                summaryMap.put("totalEventsCreated", summary[0]);
+                summaryMap.put("totalRevenue", summary[1]);
+                result.put("summary", summaryMap);
+            } else {
+                int[] summary = userRepository.getBuyerSummary(id);
+                Map<String, Object> summaryMap = new HashMap<>();
+                summaryMap.put("totalTicketsPurchased", summary[0]);
+                summaryMap.put("totalSpending", summary[1]);
+                result.put("summary", summaryMap);
+            }
+
+            return result;
         } catch (SQLException e) {
             throw new RuntimeException("Error : terjadi kesalahan database saat mengambil user -" + e.getMessage(), e);
         }
