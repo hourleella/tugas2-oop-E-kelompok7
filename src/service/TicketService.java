@@ -9,6 +9,8 @@ import repository.UserRepository;
 import repository.TicketRepository;
 
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -108,6 +110,50 @@ public class TicketService {
             return ticketRepository.findAll(null, userId, null);
         } catch (SQLException e) {
             throw new RuntimeException("Error : Terjadi kesalahan saat mengambil data user" + e.getMessage());
+        }
+    }
+
+    public Map<String, Object> getSalesReportByEvent(String eventId) {
+        try {
+            Event event = eventRepository.findById(eventId);
+            if (event == null) {
+                throw new IllegalArgumentException("Error : Event ID " + eventId + " tidak ditemukan");
+            }
+
+            List<Ticket> tickets = ticketRepository.findAll(eventId, null, null);
+
+            int totalTicketsSold = 0;
+            double totalRevenue = 0;
+            Map<String, Integer> soldByCategory = new HashMap<>();
+            Map<String, Double> revenueByCategory = new HashMap<>();
+
+            for (Ticket ticket : tickets) {
+                if ("active".equals(ticket.getStatus())) {
+                    totalTicketsSold += ticket.getQuantity();
+                    totalRevenue += ticket.getTotalPrice();
+                    soldByCategory.merge(ticket.getCategory(), ticket.getQuantity(), Integer::sum);
+                    revenueByCategory.merge(ticket.getCategory(), ticket.getTotalPrice(), Double::sum);
+                }
+            }
+
+            Map<String, Object> byCategory = new HashMap<>();
+            for (String category : soldByCategory.keySet()) {
+                Map<String, Object> catData = new HashMap<>();
+                catData.put("sold", soldByCategory.get(category));
+                catData.put("revenue", revenueByCategory.get(category));
+                byCategory.put(category, catData);
+            }
+
+            Map<String, Object> report = new HashMap<>();
+            report.put("eventId", eventId);
+            report.put("eventName", event.getName());
+            report.put("totalTicketsSold", totalTicketsSold);
+            report.put("totalRevenue", totalRevenue);
+            report.put("byCategory", byCategory);
+
+            return report;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error : Terjadi kesalahan saat mengambil sales report" + e.getMessage());
         }
     }
 }

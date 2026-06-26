@@ -89,4 +89,28 @@ public class EventService {
             throw new RuntimeException("Error : Terjadi kesalahan saat mengambil data event" + e.getMessage());
         }
     }
+
+    public List<Map<String, Object>> getPriceSummaryReport() {
+        try {
+            List<Event> events = eventRepository.findAll(null, null);
+            List<Map<String, Object>> result = new ArrayList<>();
+
+            for (Event event : events) {
+                Map<String, Object> entry = new HashMap<>();
+                entry.put("id", event.getId());
+                entry.put("name", event.getName());
+                entry.put("type", event.getType());
+                
+                Map<String, Double> prices = new HashMap<>();
+                for (String category : event.getAvailableCategories()) {
+                    prices.put(category, event.calculateTicketPrice(category));
+                }
+                entry.put("prices", prices);
+                result.add(entry);
+            }
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error : Terjadi kesalahan saat mengambil price summary" + e.getMessage());
+        }
+    }
 }
