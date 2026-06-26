@@ -16,27 +16,50 @@ Sistem ini dibangun menggunakan Java 11 native tanpa bantuan framework seperti S
 - Data Persistence (SQL Murni): Semua transaksi data terhubung ke SQLite menggunakan JDBC dengan query manual. Logika bisnis seperti pemotongan otomatis kapasitas kursi saat tiket dipesan juga divalidasi langsung di dalam sistem ini.
 
 ## 2. Cara menjalankan server (langkah-langkah dari clone sampai server berjalan)
-Berikut adalah langkah-langkah untuk menjalankan server mulai dari proses clone repositori hingga server berjalan.
-A. Clone Repositori Buka terminal atau command prompt dan jalankan perintah berikut:
-    git clone https://github.com/Eriixcc/tugas2-oop-b-kelompok7.git
-    cd tugas2-oop-b-kelompok7
+Berikut adalah langkah-langkah untuk menjalankan server mulai dari proses *clone* repositori hingga server berjalan.
 
-B. Pindah ke Direktori src Pastikan berada di direktori src sebelum melakukan kompilasi.
-    cd src
+1. **Clone Repositori**
+   Buka terminal atau command prompt dan jalankan perintah berikut:
+   ```bash
+   git clone https://github.com/Eriixcc/tugas2-oop-b-kelompok7.git
+   cd tugas2-oop-b-kelompok7
+   ```
 
-C. Kompilasi Kode Program Jalankan perintah kompilasi sesuai sistem operasi (pastikan folder lib sejajar dengan src dan berisi file JAR yang dibutuhkan):
-    Windows:
-    javac -cp ".;../lib/*" App.java model/*.java service/*.java repository/*.java handler/*.java exception/*.java database/*.java server/*.java
-    Linux / Mac:
-    javac -cp ".:../lib/*" App.java model/*.java service/*.java repository/*.java handler/*.java exception/*.java database/*.java server/*.java
+2. **Pindah ke Direktori `src`**
+   Pastikan Anda berada di direktori `src` sebelum melakukan kompilasi.
+   ```bash
+   cd src
+   ```
 
-D. Jalankan Server Windows:
-    java -cp ".;../lib/*" App
-    Linux / Mac:
-    java -cp ".:../lib/*" App
+3. **Kompilasi Kode Program**
+   Jalankan perintah kompilasi sesuai sistem operasi Anda (pastikan folder `lib` sejajar dengan `src` dan berisi file JAR yang dibutuhkan):
 
-E. Server Berjalan Server akan berjalan secara lokal. Anda dapat mengujinya melalui browser, Curl, atau Postman.
-    http://localhost:8080
+   **Windows:**
+   ```bash
+   javac -cp ".;../lib/*" App.java model/*.java service/*.java repository/*.java handler/*.java exception/*.java database/*.java server/*.java
+   ```
+
+   **Linux / Mac:**
+   ```bash
+   javac -cp ".:../lib/*" App.java model/*.java service/*.java repository/*.java handler/*.java exception/*.java database/*.java server/*.java
+   ```
+
+4. **Jalankan Server**
+   **Windows:**
+   ```bash
+   java -cp ".;../lib/*" App
+   ```
+
+   **Linux / Mac:**
+   ```bash
+   java -cp ".:../lib/*" App
+   ```
+
+5. **Server Berjalan**
+   Server akan berjalan secara lokal. Anda dapat mengujinya melalui browser, Curl, atau Postman.
+   ```text
+   http://localhost:8080
+   ```
 
 ## 3. Daftar endpoint API lengkap beserta contoh request dan response
 Berikut adalah 18 daftar endpoint kami :
