@@ -26,6 +26,7 @@ public class Concert extends Event implements Refundable {
     @Override
     public List<String> getAvailableCategories() {
         return List.of("vip", "regular", "festival");
+    }    
     
     @Override
     public double calculateRefund(int daysBeforeEvent) {

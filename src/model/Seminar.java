@@ -17,6 +17,7 @@ public class Seminar extends Event implements Refundable {
     @Override
     public List<String> getAvailableCategories() {
         return List.of("general");
+    }
 
     @Override
     public double calculateRefund(int daysBeforeEvent) {
