@@ -92,7 +92,7 @@ public class EventHandler {
             existing.setName((String) body.get("name"));
             existing.setDate((String) body.get("date"));
             existing.setBasePrice(((Number) body.get("basePrice")).doubleValue());
-            eventService.updateEvent(existing);
+            eventService.updateEvent(id, existing);
             res.sendSuccess(existing);
         } catch (EventNotFoundException e) {
             res.sendError(404, e.getMessage());
