@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Map;
+import java.util.List;
 
 public class SportMatch extends Event {
 
@@ -28,5 +29,10 @@ public class SportMatch extends Event {
             default:
                 return base * 1.0;
         }
+    }
+    
+    @Override
+    public List<String> getAvailableCategories() {
+        return List.of("tribune", "vip", "vvip");
     }
 }

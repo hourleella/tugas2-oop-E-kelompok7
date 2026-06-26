@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Map;
+import java.util.List;
 
 public abstract class Event {
     private String id;
@@ -28,6 +29,8 @@ public abstract class Event {
     }
 
     public abstract double calculateTicketPrice(String category);
+
+    public abstract List<String> getAvailableCategories();
 
     public String getId() {
         return id;

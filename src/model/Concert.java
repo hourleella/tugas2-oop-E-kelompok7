@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Map;
+import java.util.List;
 
 public class Concert extends Event implements Refundable {
     public Concert(String id, String name, String venueId, String organizerId, String date, double basePrice,
@@ -21,7 +22,11 @@ public class Concert extends Event implements Refundable {
                 return 0.0;
         }
     }
-
+    
+    @Override
+    public List<String> getAvailableCategories() {
+        return List.of("vip", "regular", "festival");
+    
     @Override
     public double calculateRefund(int daysBeforeEvent) {
         if (daysBeforeEvent > 14) {
